@@ -1,0 +1,8 @@
+#directories
+env/
+list/
+test/
+
+#file types
+*.txt
+

@@ -9,12 +9,17 @@
 #include <string>
 
 //constants
-const char* MY_SSID = "sun_server";
+/*const char* MY_SSID = "sun_server";
 const char* MY_PW = "chuck5621temp279word";
 const char* host="192.168.0.10";
 const int port = 10000;
+*/
 
-SFE_TSL2561 light; //the light object
+//constants for testing on laptop
+const char* MY_SSID = "FiOS-UJYY9";
+const char* MY_PW = "oily233glum9532gap";
+const char* host="192.168.56.1";
+const int port = 10000;
 
 
 //globals
@@ -31,12 +36,18 @@ void wifi_setup(){
 
   //WiFi.disconnect();
   WiFi.mode(WIFI_STA);
-  WiFi.begin(MY_SSID,MY_PW);
+ /* WiFi.begin(MY_SSID,MY_PW);
     IPAddress ip(192,168,0,14);   
     IPAddress gateway(192,168,0,10);   
     IPAddress subnet(255,255,255,0);   
   WiFi.config(ip, gateway, subnet);
-  
+  */
+//for internal test
+  WiFi.begin(MY_SSID,MY_PW);
+    IPAddress ip(192,168,0,14);   
+    IPAddress gateway(192,168,0,10);   
+    IPAddress subnet(255,255,255,0);   
+  WiFi.config(ip, gateway, subnet); 
   //attempt connection
   while(WiFi.status()!=WL_CONNECTED && attempt<100000){
     delay(1);

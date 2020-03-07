@@ -10,7 +10,8 @@
 //constants
 const char* MY_SSID = "FiOS-UJYY9";
 const char* MY_PW = "oily233glum9532gap";
-
+const char* host="192.168.56.1";
+const int port = 10000;
 
 SFE_TSL2561 light; //the light object
 ESP8266WebServer server(80); //our server/port
@@ -20,8 +21,6 @@ ESP8266WebServer server(80); //our server/port
 boolean gain;
 unsigned int ms;
 
-void handleRoot();
-void handleNotFound();
 /*
  * This function setsup the light object
  */
@@ -75,26 +74,16 @@ void wifi_setup(){
   WiFi.begin(MY_SSID,MY_PW);
 
   //attempt connection
-  while(WiFi.status()!=WL_CONNECTED && attempt<10){
-    delay(1000);
+  while(WiFi.status()!=WL_CONNECTED && attempt<1000000){
+    //delay(1000);
     attempt++;
     Serial.print(".");
   }
-  Serial.println("Connected");
+  Serial.println("Connected in %d"%attempt);
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
 
-  server.on("/",handleRoot);
-
-  server.on("/inline", []() {
-    server.send(200, "text/plain", "this works as well");
-  });
-
-  server.onNotFound(handleNotFound);
-
-  server.begin();
-
-  Serial.println("HTTP server started");  
+ 
 }
 
 void setup() {
@@ -106,34 +95,38 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  server.handleClient();
-  
-/*
-  unsigned int data0,data1;
+ delay(2000);
 
-  if (light.getData(data0,data1))
-  {
-    Serial.print("data0: ");
-    Serial.print(data0);
-    Serial.print(" data1: ");
-    Serial.print(data1); 
-    double lux;
-    boolean good;
+
+  //connect to host
+  Serial.print("connecting to ");
+  Serial.println(host);
   
-    good=light.getLux(gain,ms,data0,data1,lux);
-  
-    Serial.print(" lux : ");
-    Serial.print(lux);
-    if (good) Serial.println(" (good)"); else Serial.println(" (BAD)");
+  // Use WiFiClient class to create TCP connections
+  WiFiClient client;
+  if (!client.connect(host, port)) {
+    Serial.println("connection failed");
+    return;
   }
-  else
-    {
-      // getData() returned false because of an I2C error, inform the user.
-  
-      byte error = light.getError();
-      printError(error);
+  //send data
+  Serial.println("connection success!");
+  client.print("Whatsup friend");
+    
+  unsigned long timeout = millis();
+  //wait for response
+  while (client.available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      return;
     }
-    */
+  }
+  //read response
+  while(client.available()){
+    String line = client.readStringUntil('\r');
+    Serial.print(line);
+  }
+  
 }
 
 void printError(byte error)
@@ -166,7 +159,7 @@ void printError(byte error)
   }
 }
 
-void handleRoot(){
+void print_light(){
   //this is the function that is accessed when we go to "/" at the server
   unsigned int data0, data1;
   double lux;
@@ -181,23 +174,5 @@ void handleRoot(){
   Serial.print(lux);
 
   
-}
-
-
-void handleNotFound() {
-  //digitalWrite(led, 1);
-  String message = "File Not Found\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
-  for (uint8_t i = 0; i < server.args(); i++) {
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
-  }
-  server.send(404, "text/plain", message);
- // digitalWrite(led, 0);
 }
 
