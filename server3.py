@@ -6,6 +6,7 @@ import sys
 from pathvalidate import sanitize_filename
 
 #setup folder
+#this funciton setsup the folder to store the data in
 def setup_folders(folder_name):
 	f_name=sanitize_filename(folder_name)
 	x=os.listdir(os.getcwd())
@@ -15,7 +16,13 @@ def setup_folders(folder_name):
 	fpath="./"+f_name+"/"
 	return fpath
 
+#this function establishes a connection with the client using sockets
+#default port is 1000
 def begin_sockets(fpath):
+
+	'''
+	This section establishes the sockets, sets any timeout settings, etc
+	'''
 	serversocket = socket.socket(
 				socket.AF_INET, socket.SOCK_STREAM) 
 	# get local machine name
@@ -30,7 +37,12 @@ def begin_sockets(fpath):
 	serversocket.listen(5)											 
 	print("Serving at: ",host,":",port)
 
-
+	'''
+	this section sets the server to operator in recieve mode
+	waits for a connection and recieves client data
+	writes data to designated file and displays diagnostic information
+	then closes socket
+	'''
 	count=0
 	while True:
 	   # establish a connection		
@@ -65,9 +77,12 @@ def begin_sockets(fpath):
 
 		
 		finally:
+		#release any used resources
 			print('Socket_closed!')
 			clientsocket.close()
-			
+
+
+#read command line, expect data to inlcude file path			
 if (len(sys.argv)<2):
 	begin_sockets("./")
 else:
