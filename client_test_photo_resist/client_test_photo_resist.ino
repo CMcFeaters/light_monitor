@@ -125,22 +125,20 @@ void work(){
 void setup() {
   // put your setup code here, to run once:
 
-  WiFi.mode( WIFI_OFF );
+  /*WiFi.mode( WIFI_OFF );
   WiFi.forceSleepBegin();
   delay( 1 );
   
-  //Serial.begin(9600);
-  //Serial.println("HELLO");
   WiFi.forceSleepWake();
-  delay(1);
+  delay(1);*/
   wifi_setup();
 
   //read, print and send the analog value
   work();
-  WiFi.mode( WIFI_OFF );
+  /*WiFi.mode( WIFI_OFF );
   WiFi.forceSleepBegin();
-  delay( 1 );
-  ESP.deepSleep(60e6);
+  delay( 1 );*/
+  ESP.deepSleep(300e6);
 }
 
 

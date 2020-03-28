@@ -19,7 +19,6 @@ def setup_folders(folder_name):
 #this function establishes a connection with the client using sockets
 #default port is 1000
 def begin_sockets(fpath):
-
 	'''
 	This section establishes the sockets, sets any timeout settings, etc
 	'''
@@ -57,6 +56,8 @@ def begin_sockets(fpath):
 			print("Waiting for client to transmit")
 			data = clientsocket.recv(16)
 			print('received {!r}'.format(data))
+			
+			#if we have received something, print it
 			if data:
 				time=datetime.datetime.now()
 				f_name="%s%s_%s"%(fpath,time.strftime("%Y%m%d"),"data_file.txt")
@@ -83,6 +84,7 @@ def begin_sockets(fpath):
 
 
 #read command line, expect data to inlcude file path			
+
 if (len(sys.argv)<2):
 	begin_sockets("./")
 else:
