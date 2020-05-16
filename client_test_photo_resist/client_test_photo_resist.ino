@@ -1,144 +1,94 @@
 //program monitors the lightsource and posts it to a web address as a server
-
-#include <SparkFunTSL2561.h>
 #include <Wire.h>
+
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <WiFiClient.h>
+
 #include <string>
+#include "rtc_mem.h"
+#include "array_wifi.h"
 
 //constants
-int sensorPin=A0; //this is our analog input sensor
+const int sensorPin=A0; //this is our analog input sensor
+const int sleep_time=60; //sleep time in seconds
+
+
+//global variables (i honestly should make this a class)
+const int test_var=0; //1 puts it in test mode, anything else puts it in regular mode
+int sleep_time_ns=sleep_time*1e6; //sleep time in ns
 int sensorValue=0;  //this is where we'll store the sensor value
 
-
-//this is our connection address inforamtion
-const char* MY_SSID = "sun_server";
-const char* MY_PW = "chuck5621temp279word";
-const char* host="192.168.0.10";
-const int port = 10000;
-
-
-//constants for testing on laptop
 /*
- * 
- const char* MY_SSID = "FiOS-UJYY9";
-const char* MY_PW = "oily233glum9532gap";
-const char* host="192.168.1.237";
-const int port = 10000;
-*/
-
-//globals
-boolean gain;
-unsigned int ms;
-
-
-/*
- * This function sets up teh wifi portion of our project
+ * IP assigning function, right now this is just used to determine if we 
+ * are testing or running
  */
-void wifi_setup(){
- // IPAddress ip;
-  int attempt=0;
-
-  //WiFi.disconnect();
-  WiFi.mode(WIFI_STA);
+my_wifi set_ip(){
  
- //external network
- WiFi.begin(MY_SSID,MY_PW);
+  char* MY_SSID;
+  char* MY_PW;
+  char* host;
+  int port;
+  if (test_var==1){
+    //internal network
+     MY_SSID = "FiOS-UJYY9";
+     MY_PW = "oily233glum9532gap";
+     host="192.168.1.237";
+     port = 10000;
+      WiFi.begin(MY_SSID,MY_PW);
+      IPAddress ip(192,168,1,225);   
+      IPAddress gateway(192,168,1,11);   
+      IPAddress subnet(255,255,255,0);   
+    WiFi.config(ip, gateway, subnet);
+    
+  }else{
+     //external network
+    MY_SSID = "sun_server";
+    MY_PW = "chuck5621temp279word";
+    host="192.168.0.10";
+    port = 10000;
     IPAddress ip(192,168,0,14);   
     IPAddress gateway(192,168,0,10);   
     IPAddress subnet(255,255,255,0);   
-  WiFi.config(ip, gateway, subnet);
-  
-/*fozr internal test
-  WiFi.begin(MY_SSID,MY_PW);
-    IPAddress ip(192,168,1,225);   
-    IPAddress gateway(192,168,1,11);   
-    IPAddress subnet(255,255,255,0);   
-  WiFi.config(ip, gateway, subnet); 
-*/
-  //attempt connection
-  while(WiFi.status()!=WL_CONNECTED && attempt<100000){
-    delay(1);
-    attempt++;
-    //Serial.print(".");
+    WiFi.config(ip, gateway, subnet);
   }
-  //Serial.print("Connected in: ");
-  //Serial.println(attempt);
-  //Serial.print("IP Address: ");
-  //Serial.println(WiFi.localIP());
-
- 
+  return my_wifi(MY_SSID,MY_PW, host,port);
 }
-
-void work(){
-  //read data
-  sensorValue=analogRead(sensorPin);
-  
-  //print data
-  //Serial.println("Sensor value: ");
-  //Serial.println(sensorValue);
-  
-  //connect to host
-  //Serial.print("connecting to ");
-  //Serial.println(host);
-  
-  // Use WiFiClient class to create TCP connections
-  WiFiClient client;
-  if (!client.connect(host, port)) {
-    Serial.println("connection failed");
-    return;
-  }
-  //Serial.println("connection success!");
-  
-
-  
-  //send data
-  client.print(String(sensorValue));
-    
-  unsigned long timeout = millis();
-  //wait for response
-  while (client.available() == 0) {
-    if (millis() - timeout > 50000) {
-      //Serial.println(">>> Client Timeout !");
-      client.stop();
-      return;
-    }
-  }
-  //read response
-  while(client.available()){
-    String line = client.readStringUntil('\r');
-    //Serial.print(line);
-  }
-
-  client.stop();
-
- 
-}
-
-/*
- * This function setsup the light object
- */
-
 
 void setup() {
-  // put your setup code here, to run once:
 
-  /*WiFi.mode( WIFI_OFF );
-  WiFi.forceSleepBegin();
-  delay( 1 );
+  //Serial.begin(115200);
+  //Serial.println();
+  delay(1000);
+  //Serial.println(ESP.getFullVersion());
+  RTC_MEM rtcMem;
+  if ( rtcMem.write_to_RTC_MEM(analogRead(sensorPin))){
+    Serial.println("Time To Broadcast");
+    //rtcMem.read_from_RTC_MEM();
+    
+    my_wifi temp_wifi=set_ip();
+    temp_wifi.connect_to_server();
+    temp_wifi.send_data((int*)&rtcMem.rtcData.data,rtcMem.countLimit,sleep_time);
+    rtcMem.print_RTC_MEM();  
+    
+  }
   
-  WiFi.forceSleepWake();
-  delay(1);*/
-  wifi_setup();
+ 
+  
 
-  //read, print and send the analog value
-  work();
-  /*WiFi.mode( WIFI_OFF );
-  WiFi.forceSleepBegin();
-  delay( 1 );*/
-  ESP.deepSleep(300e6);
+  //go to sleep
+ /* if (test_var==1){
+    Serial.begin(9600);
+      while (!Serial) {
+       ; // wait for serial port to connect. Needed for native USB port only
+      }
+      Serial.println("TEST"); //clear the trash from the serial line
+
+  }
+  */
+
+  ESP.deepSleep(sleep_time_ns);
 }
 
 
@@ -146,4 +96,3 @@ void setup() {
 void loop() {
  
 }
-
