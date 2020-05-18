@@ -97,11 +97,11 @@ bool my_wifi::send_packet(WiFiClient client, String data){
 		}
 	}
 	//read response
-	while(client.available()){
+	/*while(client.available()){
 		String line = client.readStringUntil('\r');
 		//Serial.print("Received: ");
 		//Serial.println(line);
-	}
+	}*/
 	//Serial.print("Send success: ");
 	//Serial.println(data);
 	

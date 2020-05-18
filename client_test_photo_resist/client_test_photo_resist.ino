@@ -16,7 +16,7 @@ const int sleep_time=60; //sleep time in seconds
 
 
 //global variables (i honestly should make this a class)
-const int test_var=0; //1 puts it in test mode, anything else puts it in regular mode
+const int test_var=1; //1 puts it in test mode, anything else puts it in regular mode
 int sleep_time_ns=sleep_time*1e6; //sleep time in ns
 int sensorValue=0;  //this is where we'll store the sensor value
 
