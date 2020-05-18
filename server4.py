@@ -80,7 +80,7 @@ def begin_sockets(fpath):
 
 					
 
-					clientsocket.sendall(data)
+					#clientsocket.sendall(data)
 				else:
 					print('no data from', addr)
 					break

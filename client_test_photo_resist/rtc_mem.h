@@ -20,7 +20,7 @@
 			void read_from_RTC_MEM();//write to the RTC_MEM
 			void print_RTC_MEM();//prints the RTC MEM helper function
 			bool validate_check_sum();//return true/false based on checksum
-			const uint8_t countLimit=60;
+			const uint8_t countLimit=120;
 			RtcData rtcData;
 			
 		private:
