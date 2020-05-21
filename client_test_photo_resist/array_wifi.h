@@ -14,9 +14,9 @@
 			void setup_wifi(); 						//configures the wifi and 
 			void connect_to_server();				//connect to the wifi server
 			void static_IP(IPAddress my_IP,IPAddress my_gateway);	//setup the static IP
-			void send_data(int* data,int size,int sleep_time);	//sends the pointed to data to the location
+			void send_data(uint16_t* data,int size,int sleep_time);	//sends the pointed to data to the location
 			bool send_packet(WiFiClient client, String data);//sends an individual packet
-			String pack_data(int* data, int size,int sleep_time);//returns a string that details the packet and contains the data
+			String pack_data(uint16_t* data, int size,int sleep_time);//returns a string that details the packet and contains the data
 			
 		private:
 			char* _my_ssid; 
