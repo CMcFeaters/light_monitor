@@ -12,13 +12,13 @@
 
 //constants
 const int sensorPin=A0; //this is our analog input sensor
-const int sleep_time=60; //sleep time in seconds
+const int sleep_time=1; //sleep time in seconds 
+const int buttonPin=D3; //this is the button pin
 
-
-//global variables (i honestly should make this a class)
+//global variables
 const int test_var=1; //1 puts it in test mode, anything else puts it in regular mode
 int sleep_time_ns=sleep_time*1e6; //sleep time in ns
-int sensorValue=0;  //this is where we'll store the sensor value
+
 
 /*
  * IP assigning function, right now this is just used to determine if we 
@@ -58,18 +58,18 @@ my_wifi set_ip(){
 
 void setup() {
 
-  //Serial.begin(115200);
-  //Serial.println();
+  Serial.begin(115200);
+  Serial.println();
   delay(1000);
-  //Serial.println(ESP.getFullVersion());
+  Serial.println(ESP.getFullVersion());
   RTC_MEM rtcMem;
-  if ( rtcMem.write_to_RTC_MEM(analogRead(sensorPin))){
-    Serial.println("Time To Broadcast");
+  if ( rtcMem.write_to_RTC_MEM((uint16_t)(analogRead(sensorPin)))){
+    //Serial.println("Time To Broadcast");
     //rtcMem.read_from_RTC_MEM();
     
     my_wifi temp_wifi=set_ip();
     temp_wifi.connect_to_server();
-    temp_wifi.send_data((int*)&rtcMem.rtcData.data,rtcMem.countLimit,sleep_time);
+    temp_wifi.send_data((uint16_t*)&rtcMem.rtcData.data,rtcMem.countLimit,sleep_time);
     rtcMem.print_RTC_MEM();  
     
   }
@@ -87,8 +87,19 @@ void setup() {
 
   }
   */
+ //Serial.println(rtcMem.one_away);
 
-  ESP.deepSleep(sleep_time_ns);
+ if (rtcMem.one_away){
+    //If we are going to wake up and connect, allow wifi
+    Serial.println("SENDING NEXT TIME");
+    ESP.deepSleep(sleep_time_ns);
+  }else{
+    //if we are going to wakeup and just record, disable wifi
+    Serial.println("We are not sending next time");
+     //ESP.deepSleep(sleep_time_ns);
+      ESP.deepSleep(sleep_time_ns,RF_DISABLED);
+  }
+  
 }
 
 

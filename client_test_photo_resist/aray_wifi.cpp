@@ -50,11 +50,11 @@ void my_wifi::connect_to_server(){
 
 }
 
-void my_wifi::send_data(int* data,int size,int sleep_time){
+void my_wifi::send_data(uint16_t* data,int size,int sleep_time){
 	String packet;
 	//connect to host
-	//Serial.print("connecting to ");
-	//Serial.println(_host);
+	Serial.print("connecting to ");
+	Serial.println(_host);
 
 	// Use WiFiClient class to create TCP connections
 	WiFiClient client;
@@ -88,14 +88,14 @@ bool my_wifi::send_packet(WiFiClient client, String data){
 
 	//wait for response
 	//if we timeout, exit
-	unsigned long timeout = millis();
+	/*unsigned long timeout = millis();
 	while (client.available() == 0) {
 		if (millis() - timeout > 50000) {
 			//Serial.println(">>> Client Timeout !");
 			client.stop();
 			return false;
 		}
-	}
+	}*/
 	//read response
 	/*while(client.available()){
 		String line = client.readStringUntil('\r');
@@ -108,7 +108,7 @@ bool my_wifi::send_packet(WiFiClient client, String data){
 	return true;
 }
 
-String my_wifi::pack_data(int* data, int size, int sleep_time){
+String my_wifi::pack_data(uint16_t* data, int size, int sleep_time){
 	/*
 		Packs the data, size and ssleep time into a single string to be sent
 		over wifi.  includes building header

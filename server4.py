@@ -10,11 +10,13 @@ from pathvalidate import sanitize_filename
 #this funciton setsup the folder to store the data in
 def setup_folders(folder_name):
 	f_name=sanitize_filename(folder_name)
+	#f_name=folder_name
 	x=os.listdir(os.getcwd())
 	if x.count(f_name)<1:
 		fpath="./"+f_name
 		os.makedirs(fpath)
 	fpath="./"+f_name+"/"
+	print("Fpath: ",fpath)
 	return fpath
 
 
@@ -118,21 +120,25 @@ def write_data(data,time_size,fpath,count):
 	delta=datetime.timedelta(seconds=time_size);
 	cur_time=datetime.datetime.now()	#the current time
 	num_elements=len(data)
-	
 	for i in range(num_elements):
 		
 		time=cur_time-(num_elements-i-1)*delta
-		file_name="%s%s_%s"%(fpath,time.strftime("%Y%m%d"),"data_file.txt")
-		f=open(file_name,"a+")
+		try:
+			#print(data[i])
+			file_name="%s%s_%s"%(fpath,time.strftime("%Y%m%d"),"data_file.txt")
+			f=open(file_name,"a+")
+			#need to receive as an array, then close the socket and write
+			data_string="%d,%s,%d\n"%(count,time.strftime("%Y-%m-%d,%H:%M:%S"),int(data[i]))
+			#print("Writing: ",data_string)
+			f.write(data_string)
+			f.close()
+			#print("Write Complete")
+			count+=1
+		except:
+			print("error writing")
+			f.close
 
-		#need to receive as an array, then close the socket and write
-		data_string="%d,%s,%d\n"%(count,time.strftime("%Y-%m-%d,%H:%M:%S"),int(data[i]))
-		print("Writing: ",data_string)
-		f.write(data_string)
-		f.close()
-		print("Write Complete")
-		count+=1
-		
+
 	return count
 if (len(sys.argv)<2):
 	begin_sockets("./")
