@@ -31,7 +31,7 @@ bool RTC_MEM::write_to_RTC_MEM(uint16_t data_to_write){
 	if (rtcData.count>=countLimit){
 		//need to do a memory dump to the server
 		//do we initiate mem dump here or somewhere else?
-		rtcData.count=0;	//reset the counter and proceed as usual
+		//rtcData.count=0;	//reset the counter and proceed as usual
 		broadcast=true;
 	}else{
 		rtcData.count+=1;
@@ -54,6 +54,14 @@ bool RTC_MEM::write_to_RTC_MEM(uint16_t data_to_write){
 	return broadcast;
 }
 
+void RTC_MEM::write_to_RTC_MEM_no_data(){
+	//just write rtc data to rtc mem wihtout any new data being entered
+	if (ESP.rtcUserMemoryWrite(0, (uint32_t*) &rtcData, sizeof(rtcData))) {
+		Serial.println("Write: ");
+		//print_RTC_MEM();
+		Serial.println();
+	}
+}
 void RTC_MEM::print_RTC_MEM(){
 	/*char buf[3];
 	uint8_t *ptr = (uint8_t *)&rtcData;
