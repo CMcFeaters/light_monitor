@@ -4,7 +4,9 @@
 	#include "Arduino.h"
 	struct RtcData{
 		uint32_t crc32;	//checksum value of current data
-		uint8_t count;
+		uint8_t count;	
+		bool get_ready_to_send;	//a value that indicates if we are going to manual mode
+		bool sent;		//a bool value that indicates if the data has been sent, only applicable to
 		uint16_t data[ENTRIES]; //remaining 508 bytes of data
 	};
 			
@@ -21,6 +23,7 @@
 			void print_RTC_MEM();//prints the RTC MEM helper function
 			bool validate_check_sum();//return true/false based on checksum
 			const uint8_t countLimit=ENTRIES;
+			void write_to_RTC_MEM_no_data();//just updates count
 			RtcData rtcData;
 			bool one_away;	//goes true if the next wakeup will be a transmit
 			
