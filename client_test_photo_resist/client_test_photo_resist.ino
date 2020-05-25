@@ -2,8 +2,8 @@
 #include <Wire.h>
 
 #include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-#include <ESP8266mDNS.h>
+//#include <ESP8266WebServer.h>
+//#include <ESP8266mDNS.h>
 #include <WiFiClient.h>
 
 #include <string>
@@ -12,11 +12,10 @@
 
 //constants
 const int sensorPin=A0; //this is our analog input sensor
-const int sleep_time=1; //sleep time in seconds 
+const int sleep_time=120; //sleep time in seconds 
 const int buttonPin=13 ; //this is the button pin
-
-//global variables
-const int test_var=1; //1 puts it in test mode, anything else puts it in regular mode
+const int button_on=0;  //1 this board has a button, 0 this board does not have a button
+const int test_var=0; //1 puts it in test mode, anything else puts it in regular mode
 int sleep_time_ns=sleep_time*1e6; //sleep time in ns
 
 /*
@@ -66,8 +65,7 @@ my_wifi set_ip(){
 
 void setup() {
 
-  pinMode(buttonPin,INPUT);
-  bool buttonState=(bool)digitalRead(buttonPin);
+  
   bool state_1=false;
   /*
    * For state_1, we will do our last data recording, we will send our data next time
@@ -85,23 +83,27 @@ void setup() {
    /*
     * for state_3 we have sent the data and are waiting for the user to undo the pin
     */
-  Serial.begin(115200);
-  Serial.println();
+  //Serial.begin(115200);
+  //Serial.println();
   //delay(1000);
-  Serial.println(ESP.getFullVersion());
+  //Serial.println(ESP.getFullVersion());
   RTC_MEM rtcMem;
   //if the button is depressed and we haven't had it recorded as such
-  if ((!buttonState)&&(!rtcMem.rtcData.get_ready_to_send)){
-    state_1=true;
-    rtcMem.rtcData.get_ready_to_send=true;
-  }else if ((!buttonState)&&(!rtcMem.rtcData.sent)){
-    state_2=true;
-    rtcMem.rtcData.sent=true;
-  }else if((!buttonState)&&(rtcMem.rtcData.sent)){
-    state_3=true;
-  }else if (buttonState){
-    rtcMem.rtcData.sent=false;
-    rtcMem.rtcData.get_ready_to_send=false;
+  if (button_on){
+    pinMode(buttonPin,INPUT);
+    bool buttonState=(bool)digitalRead(buttonPin);
+    if ((!buttonState)&&(!rtcMem.rtcData.get_ready_to_send)){
+        state_1=true;
+        rtcMem.rtcData.get_ready_to_send=true;
+    }else if ((!buttonState)&&(!rtcMem.rtcData.sent)){
+      state_2=true;
+      rtcMem.rtcData.sent=true;
+    }else if((!buttonState)&&(rtcMem.rtcData.sent)){
+      state_3=true;
+    }else if (buttonState){
+      rtcMem.rtcData.sent=false;
+      rtcMem.rtcData.get_ready_to_send=false;
+    }
   }
   
   
@@ -118,21 +120,21 @@ void setup() {
   }
   
   if (state_1){ 
-    Serial.println("We are in state_1, the button was just pressed this round");
+    //Serial.println("We are in state_1, the button was just pressed this round");
     ESP.deepSleep(1E6); //sleep for 1 second and awaken with RF enabled to broadcast
   }else if (state_2){
-    Serial.println("We are in state_2, the data was sent");
+    //Serial.println("We are in state_2, the data was sent");
     ESP.deepSleep(1E6,RF_DISABLED);
   }else if (state_3){
-    Serial.println("We are in state_3, the user needs to disable the button");
+    //Serial.println("We are in state_3, the user needs to disable the button");
     ESP.deepSleep(1E6,RF_DISABLED);
   }else if (rtcMem.one_away){
     //If we are going to wake up and connect, allow wifi
-    Serial.println("SENDING NEXT TIME");
+    //Serial.println("SENDING NEXT TIME");
     ESP.deepSleep(sleep_time_ns);
   }else{
     //if we are going to wakeup and just record, disable wifi
-    Serial.println("We are not sending next time");
+    //Serial.println("We are not sending next time");
      //ESP.deepSleep(sleep_time_ns);
       ESP.deepSleep(sleep_time_ns,RF_DISABLED);
   }

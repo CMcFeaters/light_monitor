@@ -40,37 +40,37 @@ void my_wifi::connect_to_server(){
 	while(WiFi.status()!=WL_CONNECTED && attempt<100000){
 		delay(10);
 		attempt++;
-		Serial.print(".");
+		//Serial.print(".");
 	}
 	
-	Serial.print("Connected in: ");
-	Serial.println(attempt);
-	Serial.print("IP Address: ");
-	Serial.println(WiFi.localIP());
+	//Serial.print("Connected in: ");
+	//Serial.println(attempt);
+	//Serial.print("IP Address: ");
+	//Serial.println(WiFi.localIP());
 
 }
 
 void my_wifi::send_data(uint16_t* data,int size,int sleep_time){
 	String packet;
 	//connect to host
-	Serial.print("connecting to ");
-	Serial.println(_host);
+	//Serial.print("connecting to ");
+	//Serial.println(_host);
 
 	// Use WiFiClient class to create TCP connections
 	WiFiClient client;
 	
 	if (!client.connect(_host,_port)) {
-		Serial.println("connection failed");
+		//Serial.println("connection failed");
 		return;
 	}
-	Serial.println("connection success!");
+	//Serial.println("connection success!");
 
 	packet=pack_data(data,size,sleep_time);
-	Serial.print("Sending packet: ");
-	Serial.println(packet);
+	//Serial.print("Sending packet: ");
+	//Serial.println(packet);
 	
 	if (not send_packet(client,packet)){
-		Serial.println("Failed on packet");
+		//Serial.println("Failed on packet");
 		client.stop();
 		return;
 	}
@@ -83,7 +83,7 @@ bool my_wifi::send_packet(WiFiClient client, String data){
 	/*
 		sends the "data" over the wificlient
 	*/
-	Serial.println("Sending!");
+	//Serial.println("Sending!");
 	client.print(data);
 
 	//wait for response
@@ -91,7 +91,7 @@ bool my_wifi::send_packet(WiFiClient client, String data){
 	/*unsigned long timeout = millis();
 	while (client.available() == 0) {
 		if (millis() - timeout > 50000) {
-			Serial.println(">>> Client Timeout !");
+			//Serial.println(">>> Client Timeout !");
 			client.stop();
 			return false;
 		}
@@ -99,11 +99,11 @@ bool my_wifi::send_packet(WiFiClient client, String data){
 	//read response
 	/*while(client.available()){
 		String line = client.readStringUntil('\r');
-		Serial.print("Received: ");
-		Serial.println(line);
+		//Serial.print("Received: ");
+		//Serial.println(line);
 	}*/
-	Serial.print("Send success: ");
-	Serial.println(data);
+	//Serial.print("Send success: ");
+	//Serial.println(data);
 	
 	return true;
 }

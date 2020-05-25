@@ -1,6 +1,6 @@
 #ifndef rtc_mem_h
 	#define rtc_mem_h
-	#define ENTRIES 10
+	#define ENTRIES 200
 	#include "Arduino.h"
 	struct RtcData{
 		uint32_t crc32;	//checksum value of current data
