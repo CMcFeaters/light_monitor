@@ -124,7 +124,7 @@ def write_data(data,time_size,fpath,count):
 		
 		time=cur_time-(num_elements-i-1)*delta
 		try:
-			#print(data[i])
+			print(data[i])
 			file_name="%s%s_%s"%(fpath,time.strftime("%Y%m%d"),"data_file.txt")
 			f=open(file_name,"a+")
 			#need to receive as an array, then close the socket and write
