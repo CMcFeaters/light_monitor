@@ -4,17 +4,18 @@
 RTC_MEM::RTC_MEM(){
 //this doesn't do anything yet.
 
-//	//Serial.print("pre Count: ");
-//	//Serial.println(rtcData.count);
+//	Serial.print("pre Count: ");
+//	Serial.println(rtcData.count);
 	one_away=false;
 	read_from_RTC_MEM();
-	//Serial.print("Count: ");
-	//Serial.println(rtcData.count);
+	Serial.print("Count: ");
+	Serial.println(rtcData.count);
+	//rtcData.count=0;
 }
 
 void RTC_MEM::read_from_RTC_MEM(){
 	if (ESP.rtcUserMemoryRead(0, (uint32_t*) &rtcData, sizeof(rtcData))) {
-		//Serial.println("Read complete");
+		Serial.println("Read complete");
 
 	}
 	validate_check_sum();//after teh read, validate teh checksum
@@ -22,12 +23,13 @@ void RTC_MEM::read_from_RTC_MEM(){
 
 bool RTC_MEM::write_to_RTC_MEM(uint16_t data_to_write){
 	bool broadcast=false;
-	
-	/*for (size_t i = 0; i < sizeof(rtcData.data); i++) {	//write some random values to the RTC data space
-		rtcData.data[i] = random(0, 128);
-	}*/
+	//if we start with a new entry limit that is less than our previous
+	//entry limit, this will cause an error in our code
+	if (rtcData.count>countLimit){
+		rtcData.count=0;
+	}
 	rtcData.data[rtcData.count]=data_to_write;
-	
+
 	if (rtcData.count>=countLimit){
 		//need to do a memory dump to the server
 		//do we initiate mem dump here or somewhere else?
@@ -40,26 +42,25 @@ bool RTC_MEM::write_to_RTC_MEM(uint16_t data_to_write){
 			one_away=true;
 		}
 	}
-	
 	// Update CRC32 of data
 	rtcData.crc32 = _gen_check_sum((uint8_t*) &rtcData.data[0], sizeof(rtcData.data));
 	
 	// Write struct to RTC memory
 	if (ESP.rtcUserMemoryWrite(0, (uint32_t*) &rtcData, sizeof(rtcData))) {
-		//Serial.println("Write: ");
+		Serial.println("Write: ");
 		//print_RTC_MEM();
-		//Serial.println();
+		Serial.println();
 	}
-	
+
 	return broadcast;
 }
 
 void RTC_MEM::write_to_RTC_MEM_no_data(){
 	//just write rtc data to rtc mem wihtout any new data being entered
 	if (ESP.rtcUserMemoryWrite(0, (uint32_t*) &rtcData, sizeof(rtcData))) {
-		//Serial.println("Write: ");
+		Serial.println("Write: ");
 		//print_RTC_MEM();
-		//Serial.println();
+		Serial.println();
 	}
 }
 void RTC_MEM::print_RTC_MEM(){
@@ -67,34 +68,34 @@ void RTC_MEM::print_RTC_MEM(){
 	uint8_t *ptr = (uint8_t *)&rtcData;
 	for (size_t i = 0; i < sizeof(rtcData); i++) {
 		sprintf(buf, "%02X", ptr[i]);
-		//Serial.print(buf);
+		Serial.print(buf);
 		if ((i + 1) % 32 == 0) {
-			//Serial.println();
+			Serial.println();
 		} else {
-			//Serial.print(" ");
+			Serial.print(" ");
 			}
 		}
-	//Serial.println();*/
+	Serial.println();*/
 	
 
 	for (int i=0;i<countLimit;i++){
-		//Serial.print(rtcData.data[i]);
-		//Serial.print(" ");
+		Serial.print(rtcData.data[i]);
+		Serial.print(" ");
 	}
-	//Serial.println();
+	Serial.println();
 }
 
 bool RTC_MEM::validate_check_sum(){
 	_crcOfData=_gen_check_sum((uint8_t*) &rtcData.data[0], sizeof(rtcData.data));	//passing the location of our data and the size of the data we get our crc32 value
-	//Serial.print("CRC32 of data: ");
-	//Serial.println(_crcOfData, HEX);
-	//Serial.print("CRC32 read from RTC: ");
-	//Serial.println(rtcData.crc32, HEX);
+	Serial.print("CRC32 of data: ");
+	Serial.println(_crcOfData, HEX);
+	Serial.print("CRC32 read from RTC: ");
+	Serial.println(rtcData.crc32, HEX);
 	
 	if (_crcOfData != rtcData.crc32) {
-		//Serial.println("CRC32 in RTC memory doesn't match CRC32 of data. Data is probably invalid!");
+		Serial.println("CRC32 in RTC memory doesn't match CRC32 of data. Data is probably invalid!");
 	} else {
-		//Serial.println("CRC32 check ok, data is probably valid.");
+		Serial.println("CRC32 check ok, data is probably valid.");
 	}
 }
 
