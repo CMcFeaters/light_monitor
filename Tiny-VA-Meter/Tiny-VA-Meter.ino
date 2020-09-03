@@ -53,6 +53,7 @@ enum {
 Adafruit_INA219 ina219;
 LiquidCrystal_PCF8574 lcd(0x27); // set the LCD address to 0x27 for a 20 chars and 2 line display
 
+bool first_print=true;
 bool button_pressed = false;
 bool wait_for_button_release = false;
 bool sensor_sleep = false;
@@ -93,7 +94,7 @@ void setup(void)
 }
 
 //function that returns a string of length 20
-String make20(char* line)
+String make20( char* line)
 {
   int len;
   
@@ -517,6 +518,15 @@ void update_screen()
 void transmit_serial()
 {
 #ifdef ENABLE_TERMINAL
+    if (first_print){
+        Serial.println("currentMillis,busvoltage,shuntvoltage,loadvoltage,current_ma,power_mw,mAh");
+        first_print=false;
+    }
+    String out_string=String();
+    out_string=String(currentMillis)+","+busvoltage+","+shuntvoltage+","+loadvoltage+","+current_mA+","+power_mw+","+mAh;
+    Serial.println(out_string);
+    
+    /*
     Serial.print("Millis:        "); Serial.print(currentMillis); Serial.println(" ms");
     Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
     Serial.print("Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
@@ -525,6 +535,7 @@ void transmit_serial()
     Serial.print("Power:         "); Serial.print(power_mw); Serial.println(" mW");
     Serial.print("Comsumption:   "); Serial.print(mAh); Serial.println(" mAh");
     Serial.println("");
+    */
 #endif
 }
 

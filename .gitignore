@@ -6,3 +6,4 @@ test/
 #file types
 *.txt
 *.pdf
+*.csv
