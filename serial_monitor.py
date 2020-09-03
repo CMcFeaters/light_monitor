@@ -37,7 +37,8 @@ i=0
 _exit=False
 while(not _exit):
 	try:
-		f.write(str(ser.readline().decode("utf-8")))
+		f.write(ser.readline().decode("utf-8").replace('\r\n','\n'))
+		
 		i+=1
 	except (KeyboardInterrupt, SystemExit):
 		print("User Done!")
