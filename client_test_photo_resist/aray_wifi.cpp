@@ -52,16 +52,20 @@ void my_wifi::connect_to_server(){
 	WiFi.begin(_my_ssid,_my_pw);
 	
 	//attempt connection
-	while(WiFi.status()!=WL_CONNECTED && attempt<100000){
+	while(WiFi.status()!=WL_CONNECTED && attempt<20){
 		delay(500);
 		attempt++;
 		Serial.print(".");
 	}
+	if(WiFi.status()!=WL_CONNECTED){
+    Serial.println("Connection Failed!");
+	}else{
+    Serial.print("Connected in: ");
+    Serial.println(attempt);
+    Serial.print("IP Address: ");
+    Serial.println(WiFi.localIP());  
+	}
 	
-	Serial.print("Connected in: ");
-	Serial.println(attempt);
-	Serial.print("IP Address: ");
-	Serial.println(WiFi.localIP());
 
 }
 
@@ -81,8 +85,8 @@ void my_wifi::send_data(uint16_t* data,int size,int sleep_time, bool night_mode)
 	Serial.println("connection success!");
 
 	packet=pack_data(data,size,sleep_time);
-	Serial.print("Sending packet: ");
-	Serial.println(packet);
+	Serial.println("Sending packet: ");
+	//Serial.println(packet);
 	
 	if (not send_packet(client,packet,night_mode)){
 		Serial.println("Failed on packet");

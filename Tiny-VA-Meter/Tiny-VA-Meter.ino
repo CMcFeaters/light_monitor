@@ -357,7 +357,9 @@ void long_press()
       refresh_rate = 500;
     } else if(refresh_rate == 500) {
       refresh_rate = 1000;
-    } else {
+    } else if(refresh_rate == 1000) {
+      refresh_rate = 10;
+    }else {
       refresh_rate = 100;
     } 
       break;

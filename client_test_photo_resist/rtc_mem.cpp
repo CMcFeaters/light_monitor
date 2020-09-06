@@ -15,13 +15,14 @@ RTC_MEM::RTC_MEM(){
 
 void RTC_MEM::read_from_RTC_MEM(){
 	if (ESP.rtcUserMemoryRead(0, (uint32_t*) &rtcData, sizeof(rtcData))) {
-		Serial.println("Read complete");
+		//Serial.println("Read complete");
 
 	}
 	validate_check_sum();//after teh read, validate teh checksum
 }
 
 bool RTC_MEM::write_to_RTC_MEM(uint16_t data_to_write){
+  Serial.println("State: SENSE_WRITE");
 	bool broadcast=false;
 	//if we start with a new entry limit that is less than our previous
 	//entry limit, this will cause an error in our code
