@@ -1,10 +1,15 @@
 '''
+Monitors the output of the esp8266 on com3.
+Files is output as .csv 
+format is just the current "State of the ESP8266"
+incluces "AWAKE, SENSE_WRITE, NO_RF_SLEEP, RF_SLEEP, BROADCAST"
+No intended display at this time
 
-This is a serial monitor program.  
-it is intended to capture input on a python line and store it in a file
-
+the code basically waits for the port to open
+logs the data until it hits an error or the user hits ctrl+c
 
 '''
+
 
 #initial funciton to monitor and print serial line data
 import serial

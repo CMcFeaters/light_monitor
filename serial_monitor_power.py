@@ -1,8 +1,11 @@
 '''
+Monitors the output of the tiny-va-meter on com3.
+Files is output as .csv 
+format: "currentMillis,busvoltage,shuntvoltage,loadvoltage,current_ma,power_mw,mAh"
+intended to be viewed in "display" notebook
 
-This is a serial monitor program.  
-it is intended to capture input on a python line and store it in a file
-
+the code basically waits for the port to open
+logs the data until it hits an error or the user hits ctrl+c
 
 '''
 
