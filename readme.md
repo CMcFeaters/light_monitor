@@ -17,5 +17,3 @@ Tiny-VA-Meter is pulled from this webiste:
 https://www.instructables.com/id/Tiny-VA-Meter-With-INA219/
 And this repo:
 https://github.com/KarlTorp/Tiny-VA-Meter
-
-check
