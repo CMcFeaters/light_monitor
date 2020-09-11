@@ -7,3 +7,6 @@ test/
 *.txt
 *.pdf
 *.csv
+
+#files
+data.h
