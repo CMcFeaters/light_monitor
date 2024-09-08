@@ -7,6 +7,6 @@ test/
 *.txt
 *.pdf
 *.csv
-
+*.ino
 #files
 data.h
